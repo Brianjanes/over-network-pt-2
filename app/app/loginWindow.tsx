@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
+import { string } from 'zod';
 
-export default function LoginWindow(
-  { setUpProfile }: {
-    setUpProfile:  (form: FormData) => Promise<void>;
-  }
-) {
-
+export default function LoginWindow({
+  setUpProfile,
+}: {
+  setUpProfile: (form: FormData) => Promise<void>;
+}) {
   /* 
     TODO #1: Add a state variable to store the current error message
   */
+  const [error, setError] = useState<string>('');
 
+  type CustomError = {
+    message: string;
+    code: number;
+  };
   /*
     This function is called to set up the profile of the new user. It is called
     when a user submits the login form. It takes a FormData object as an argument,
@@ -23,6 +28,7 @@ export default function LoginWindow(
       TODO #3: Set the error state to an empty string
     */
 
+    setError('');
     /* 
       TODO #4: Set up a try catch block to call the setUpProfile() function and set the error state
       if an error is thrown
@@ -31,10 +37,16 @@ export default function LoginWindow(
         - Use the setUpProfile() function to set up the user's profile and log them in
         - In the catch block, set the error state to the error message (error.message)
     */
-  }
+    try {
+      // Call the setUpProfile() function and handle any errors
+      setUpProfile(form);
+    } catch (error: CustomError) {
+      setError(error.message); // Set the error state to the error message
+    }
+  };
 
   return (
-    <form action={onSubmit} >
+    <form action={onSubmit}>
       <div className='flex flex-col space-y-3'>
         <p className='text-xs font-bold uppercase text-neutral-100'>
           Create Account
@@ -55,23 +67,21 @@ export default function LoginWindow(
           placeholder='Name'
           required
         />
-        <div className="w-full">
+        <div className='w-full'>
           <button
             type='submit'
-            className='w-full rounded bg-blue-500 py-2.5 text-sm font-medium hover:bg-blue-400 flex flex-row justify-center items-center space-x-2'
+            className='flex w-full flex-row items-center justify-center space-x-2 rounded bg-blue-500 py-2.5 text-sm font-medium hover:bg-blue-400'
           >
             Create Account
           </button>
-          <p className="text-red-500">
+          <p className='text-red-500'>
             {/* 
               TODO #2: Display the error message if it is not an empty string using the error state variable
             */}
-            {
-              "PLACEHOLDER"
-            }
+            {error && error}
           </p>
         </div>
       </div>
     </form>
-  )
+  );
 }
